@@ -1,4 +1,4 @@
-// info: http://thiemonge.org/getting-started-with-uinput
+// uinput tutorial: http://thiemonge.org/getting-started-with-uinput
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -53,7 +53,6 @@ int main(int argc, char **argv)
     exit(EXIT_FAILURE);
   }
 
-  //FILE *fp = fopen (argv[1], "rb");
   int dev = open(argv[1], O_RDONLY);
 
   if (dev < 0) {
@@ -93,7 +92,6 @@ int main(int argc, char **argv)
   unsigned char patt_rel[SIZE] = { 0 };
   
 
-  //while (fread(buf, SIZE, 1, fp) > 0) {
   while ((res = read(dev, buf, SIZE)) > 0) {
     fprintf(stderr, "%02x%02x%02x%02x%02x%02x%02x%02x  ", 
         buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
@@ -126,12 +124,10 @@ int main(int argc, char **argv)
     }
   }
 
-//  if (ferror(fp)) {
   if (res < 0) {
     perror("I/O Error");
   }
  
-  //fclose(fp);
   close(dev);
   res = ioctl(uifd, UI_DEV_DESTROY);
   close(uifd);
