@@ -118,6 +118,7 @@ int main(int argc, char **argv)
       fprintf(stderr, "%d: %d\n", __LINE__, res);
       res = uinput_sync(uifd);
       fprintf(stderr, "%d: %d\n", __LINE__, res);
+      pressed = 0;
     }
     else {
       fprintf(stderr, "Other\n");
