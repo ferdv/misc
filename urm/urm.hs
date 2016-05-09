@@ -1,10 +1,11 @@
 -- A simple URM machine simulator.
 -- Based on the CS-275 module @ Swansea University
--- Written by Ferdinand Vesely (csfvesely@swansea.ac.uk)
+-- 
+-- Written by Ferdinand Vesely <csfvesely@swansea.ac.uk> (see LICENSE for 
+-- copyright details)
 
 import qualified Data.Map.Strict as Map
 import Data.List (stripPrefix)
-import Control.Applicative ((<|>))
 import Control.Monad (liftM)
 import System.Environment (getArgs)
 import System.IO (hFlush, stdout)
@@ -79,6 +80,7 @@ urmStep (prog, pc, regs) = do
         Map.insert reg (v - 1) regs
 
 
+-- Perform a full computation.
 urmSteps :: UrmState -> UrmState
 urmSteps state =
   let result = urmStep state in
@@ -177,7 +179,7 @@ showProg prog = showProg' "" 0 prog
 
 showProgH :: Pc -> Prog -> String
 showProgH i prog = showProgH' "" 0 prog
-  where showProgH' aux n [] = if i >= n then aux ++ "-> \n"  else aux
+  where showProgH' aux n [] = if i >= n then aux ++ "-> \n" else aux ++ "\n"
         showProgH' aux n (instr : prog') = 
           showProgH' (aux ++ showLine' n instr ++ "\n") (n + 1) prog'
         showLine' n instr =
