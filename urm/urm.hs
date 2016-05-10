@@ -28,7 +28,7 @@ data Instr = Succ Reg
 -- A program is a list of instructions
 type Prog = [Instr]
 
--- Registers are kept as a mapt from register references to values
+-- Registers are kept as a map from register references to values
 type Regs = Map.Map Reg Value
 
 -- The state of the machine consists of a program, the program counter and the 
@@ -79,8 +79,7 @@ urmStep (prog, pc, regs) = do
 -- Perform a full computation.
 urmSteps :: UrmState -> UrmState
 urmSteps state =
-  let result = urmStep state in
-  case result of
+  case urmStep state of
     Nothing -> state
     Just state' -> urmSteps state'
 
@@ -170,7 +169,7 @@ showInstr instr =
   where regOp r op = showReg r ++ " := " ++ showReg r ++ " " ++ op ++ " 1"
 
 showLine :: Pc -> Instr -> String
-showLine n instr = show n ++ ":  " ++ showInstr instr
+showLine n instr = show n ++ ":\t" ++ showInstr instr
 
 showProg :: Prog -> String
 showProg prog = showProg' "" 0 prog

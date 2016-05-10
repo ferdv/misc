@@ -1,0 +1,20 @@
+The following example URM programs are included:
+
+  add.urm: Add two numbers toghether
+    Arguments in R0, R1
+    Result: R0 := R0 + R1
+
+  sub.urm: Subtract the second argument from the first one.
+    Arguments in R0, R1
+                    / R0 - R1    if R0 > R1
+    Result:   R0 := |
+                    \ 0          otherwise
+
+  mult.urm: Multiply two numbers.
+    Arguments in R0, R1
+    Result: R0 := R0 * R1
+  
+  sum.urm: Sum numbers from 1 to n.
+    Arument in R0
+    Result: R0 := 1 + 2 + ... + (R0 - 1) + R0
+
