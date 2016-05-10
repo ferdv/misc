@@ -54,17 +54,13 @@ urmStep :: UrmState -> Maybe UrmState
 urmStep (prog, pc, regs) = do
   instr <- fetchInstr prog pc
   case instr of
-    Succ r -> 
-      let old = getReg regs r in
-      return (prog, pc + 1, succReg regs r)
-    Pred r ->
-      return (prog, pc + 1, predReg regs r)
+    Succ r -> return (prog, pc + 1, succReg regs r)
+    Pred r -> return (prog, pc + 1, predReg regs r)
     IfZero r i ->
-      let v = getReg regs r in
-      if v == 0 then
-        return (prog, i, regs)
-      else
-        return (prog, pc + 1, regs)
+        if getReg regs r == 0 then
+          return (prog, i, regs)
+        else
+          return (prog, pc + 1, regs)
   where
     succReg :: Regs -> Reg -> Regs
     succReg regs reg =
@@ -132,25 +128,29 @@ urmRunFileStepped fn args = do
 
 main = do
   args <- getArgs
-  if null args then
-    putStrLn "\
-      \A simple URM machine simulator based on the CS-275 module.\n\
-      \Usage: urm [--step] FILE reg0 reg1 ...\n\
-      \\n\
-      \Arguments:\n\
-      \    --step\t\t(optional) pause after each step of the machine\n\
-      \\n\    
-      \    FILE\t\tURM program file\n\
-      \    reg0 reg1 ...\tinitial values for registers 0, 1, etc.\n\
-      \\n\
-      \Example:\n\
-      \  urm --step add.urm 12 13"
-  else if head args == "--step" then do
-    urmRunFileStepped (args!!1) (map read $ drop 2 args)
-    return ()
-  else do
-    urmRunFile (head args) (map read $ tail args)
-    return ()
+  case args of
+    [] -> putStrLn "\
+        \A simple URM machine simulator based on the CS-275 module.\n\
+        \Usage: urm [--step] FILE reg0 reg1 ...\n\
+        \\n\
+        \Arguments:\n\
+        \    --step\t\t(optional) pause after each step of the machine\n\
+        \\n\
+        \    FILE\t\tURM program file\n\
+        \    reg0 reg1 ...\tinitial values for registers 0, 1, etc.\n\
+        \\n\
+        \Example:\n\
+        \  urm --step add.urm 12 13"
+
+    "--step" : file : args' ->
+        do
+          urmRunFileStepped file (map read $ args')
+          return ()
+
+    file : args' ->
+        do
+          urmRunFile file (map read $ args')
+          return ()
 
 justRegs :: UrmState -> [Value]
 justRegs (_, _, regs) = (snd . unzip . Map.toList) regs
@@ -212,8 +212,8 @@ showState (prog, pc, regs) =
 alt :: (a -> Maybe b) -> (a -> Maybe b) -> a -> Maybe b
 alt f g a = 
   case f a of
-  Nothing -> g a
-  just_b -> just_b
+    Nothing -> g a
+    just_b -> just_b
 infixl 0 `alt`
 
 lit :: Char -> String -> Maybe String
@@ -227,8 +227,8 @@ lit c (h : rest) =
 opt :: (String -> Maybe String) -> String -> Maybe String
 opt f s = 
   case f s of
-  Nothing -> Just s
-  s' -> s'
+    Nothing -> Just s
+    s' -> s'
 
 lits :: String -> String -> Maybe String
 lits = Data.List.stripPrefix
@@ -261,8 +261,7 @@ urmLine :: Int -> String -> Maybe (Instr, String)
 urmLine n s = do
   (num, s') <- label s
   (instr, s') <- instruction n s'
-  opt sptbnl s' 
-    >>= returnWith instr
+  sptbnl s' >>= returnWith instr
 
 label :: String -> Maybe (Integer, String)
 label s = do
